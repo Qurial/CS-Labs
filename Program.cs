@@ -2,11 +2,33 @@
 
 namespace ConsoleApp1
 {
-
     class Program
     {
-
-        public static int[] throwDice()
+        static void printDice(int[] fPlayerDice, int[] sPlayerDice)
+        {
+            Console.Clear();
+            Console.WriteLine("Player 1 Dices:              Player 2 Dices:");
+            Console.Write("  ");
+            for (int i = 0; i < 11; i++)
+            {
+                if (i <= 4)
+                {
+                    Console.Write(fPlayerDice[i]);
+                    Console.Write(" ");
+                }
+                else if (i == 5)
+                {
+                    Console.Write("                   ");
+                }
+                else
+                {
+                    Console.Write(sPlayerDice[i - 6]);
+                    Console.Write(" ");
+                }
+            }
+            Console.WriteLine("");
+        }
+        static int[] throwDice()
         {
             int[] playerDice = new int[6];
             Random rnd = new Random();
@@ -14,12 +36,10 @@ namespace ConsoleApp1
             for (int i = 0; i < 5; i++)
             {
                 playerDice[i] = rnd.Next(6) + 1;
-                Console.Write(playerDice[i] + ", ");
             }
             return playerDice;
-        } 
-        
-        public static int[] rethrowDice(int[] playerDice, string rethrownDice)
+        }    
+        static int[] rethrowDice(int[] playerDice, string rethrownDice)
         {
             Random rnd = new Random();
             string[] dice = rethrownDice.Split();          //creating an array of numbers of dice that will be rethrown
@@ -28,12 +48,15 @@ namespace ConsoleApp1
 
             for (int i = 0; i < length; i++)                    
             {
-                diceNum[i] = int.Parse(dice[i]);
-                playerDice[diceNum[i] - 1] = rnd.Next(6) + 1;
+                if (dice[i] == "1" || dice[i] == "2" || dice[i] == "3" || dice[i] == "4" || dice[i] == "5" || dice[i] == "6")
+                {
+                    diceNum[i] = int.Parse(dice[i]);
+                    playerDice[diceNum[i] - 1] = rnd.Next(6) + 1;
+                }
             }
             return playerDice;
         }
-        public static int finalScore(int[] playerDice)
+        static int finalScore(int[] playerDice)
         {
             int pair = 0, threeOfKind = 0, score, finalScore = 0, one = 0, six = 0;
             for (int i = 1; i <= 6; i++)
@@ -97,91 +120,76 @@ namespace ConsoleApp1
             }
             return finalScore;
         }
-
         static void whoWon(int[] fPlayerDice, int[] sPlayerDice)
         {
             int fPlayerScore = finalScore(fPlayerDice);
             int sPlayerScore = finalScore(sPlayerDice);
+            
+            Console.WriteLine();
 
             if (fPlayerScore > sPlayerScore)
             {
-                Console.WriteLine("Player 1 wins!");
+                Console.WriteLine("              Player 1 wins!");
             }
             else if (fPlayerScore < sPlayerScore)
             {
-                Console.WriteLine("Player 2 wins!");
+                Console.WriteLine("              Player 2 wins!");
             }
             else
             {
-                Console.WriteLine("Draw");
+                Console.WriteLine("                   Draw");
             }
         }
-
         static int[] whatToRethrow(int[] playerDice)
         {
-            string answer = Console.ReadLine();
-
-            if (answer == "yes")
-            {
-                Console.WriteLine("\nWhat dices do you wnat to rethrow?");
-                string rethrownDice = Console.ReadLine();
-                playerDice = rethrowDice(playerDice, rethrownDice);
-                for (int i = 0; i < 5; i++)
-                {
-                    Console.Write(playerDice[i] + ", ");
-                }
-            }
+            Console.Write(" what dices do you wnat to re-roll?(Or press enter to continue without re-rolling):\n");
+            string rethrownDice = Console.ReadLine();
+            playerDice = rethrowDice(playerDice, rethrownDice);
             return playerDice;
         }
         static void Main(string[] args)
         {
-
-            Console.WriteLine("Press any key to throw dice, player one");
-            Console.ReadKey();
+            Console.WriteLine("Write 'rules' or press enter to start");
+            string action = Console.ReadLine();
+            while (action == "rules" || action == "ranking")
+            {
+                if (action == "rules")
+                {
+                    Console.WriteLine("Each player uses a set of five dice");
+                    Console.WriteLine("The goal of the game is to roll the strongest hand in two out of three hands");
+                    Console.WriteLine("After first roll you can select any dice you wish to re-roll");
+                    Console.WriteLine("The player with the highest-ranking hand wins");
+                    Console.WriteLine("To know the Ranking of Hands enter 'ranking' or press enter to start");
+                }
+                else if(action == "ranking")
+                {
+                    Console.WriteLine("Nothing — five mismatched dice forming no sequence longer than four.");
+                    Console.WriteLine("Pair — two dice showing the same value.");
+                    Console.WriteLine("Two Pairs — two pairs of dice, each showing the same value.");
+                    Console.WriteLine("Three-of-a-Kind — three dice showing the same value.");
+                    Console.WriteLine("Five High Straight — dice showing values from 1 through 5, inclusive.");
+                    Console.WriteLine("Six High Straight — dice showing values from 2 through 6, inclusive.");
+                    Console.WriteLine("Full House — Pair of one value and Three-of-a-Kind of another.");
+                    Console.WriteLine("Four-of-a-Kind — four dice showing the same value.");
+                    Console.WriteLine("Five-of-a-Kind — all five dice showing the same value.");
+                    Console.WriteLine("Press enter to start");
+                }
+                action = Console.ReadLine();
+            }
+            
             int[] fPlayerDice = throwDice();
-
-
-            Console.WriteLine("\nPress any key to throw dice, player two");
-            Console.ReadKey();
             int[] sPlayerDice = throwDice();
+            printDice(fPlayerDice, sPlayerDice);
 
-            Console.WriteLine("\nDo you want to rethrow part of your dices , player one?");
+            Console.Write("player 1,");
             fPlayerDice =  whatToRethrow(fPlayerDice);
-            /*Console.WriteLine("\nDo you want to rethrow part of your dices , player one?");
-            string answer = Console.ReadLine();
+            printDice(fPlayerDice, sPlayerDice);
 
-            if (answer == "yes")
-            {
-                Console.WriteLine("\nWhat dices do you wnat to rethrow?");
-                string rethrownDice = Console.ReadLine();
-                fPlayerDice = rethrowDice(fPlayerDice, rethrownDice);
-                for (int i = 0 ;i < 5 ; i++)
-                {
-                    Console.Write(fPlayerDice[i] + ", ");
-                }
-            }*/
-
-            Console.WriteLine("\nDo you want to rethrow part of your dices , player two?");
+            Console.Write("player 2,");
             sPlayerDice = whatToRethrow(sPlayerDice);
-            /*string answer = Console.ReadLine();
+            printDice(fPlayerDice, sPlayerDice);
 
-            if (answer == "yes")
-            {
-                Console.WriteLine("\nWhat dices do you wnat to rethrow?");
-                string rethrownDice = Console.ReadLine();
-                sPlayerDice = rethrowDice(sPlayerDice, rethrownDice);
-                for (int i = 0; i < 5; i++)
-                {
-                    Console.Write(sPlayerDice[i] + ", ");
-                }
-            }*/
             whoWon(fPlayerDice, sPlayerDice);
         }
-    }
-
-    
+    }  
 }
-
-
-
-
